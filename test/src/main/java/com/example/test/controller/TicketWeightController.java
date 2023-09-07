@@ -107,7 +107,6 @@ public class TicketWeightController {
     }
 
 
-
     @PutMapping("/{ticketId}/{siteNo}")
     public ResponseEntity<TicketWeight> updateTicket(
             @PathVariable Integer ticketId,
@@ -116,5 +115,15 @@ public class TicketWeightController {
     ) {
         TicketWeight updatedTicket = ticketWeightService.updateTicket(ticketId, siteNo, updateRequest);
         return ResponseEntity.ok(updatedTicket);
+    }
+
+    @GetMapping("/centers-net-weight-list")
+    public ResponseEntity<Map<String, BigDecimal>> getCenterNetWeights(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate,
+            @RequestParam("itemType") String itemType
+    ) {
+        Map<String, BigDecimal> centerNetWeights = ticketWeightService.getCenterNetWeights(startDate, endDate, itemType);
+        return ResponseEntity.ok(centerNetWeights);
     }
 }
