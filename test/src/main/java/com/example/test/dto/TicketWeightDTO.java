@@ -14,15 +14,13 @@ public class TicketWeightDTO {
     private Integer ticketId;
     private String itemType;
     private String itemName;
-    //    private String centerName;
-//    private String villageName;
     private String clientName;
+    private String clientType;
     private String driverName;
     private String vehicleNumber;
     private Integer firstWeight;
     private Integer secondWeight;
     private Integer netWeight;
-    //    private String carOneDate;
     private String carTwoDate;
     private String carOneTime;
     private String carTwoTime;

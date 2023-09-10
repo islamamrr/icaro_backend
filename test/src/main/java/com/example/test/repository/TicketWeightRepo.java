@@ -13,12 +13,14 @@ import java.util.List;
 @Repository
 public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeKey> {
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
-            "WHERE t.itemName = :itemName " +
+            "WHERE (:itemName IS NULL OR t.itemName = :itemName)" +
+            "AND (:clientType IS NULL OR t.clientType = :clientType )" +
             "AND ((:siteNo IS NULL AND t.id.siteNo <> 3) OR (t.id.siteNo = :siteNo))" +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') " +
             "AND STR_TO_DATE(:endDate, '%d-%b-%y')")
     BigDecimal getTotalNetWeightByItemNameSiteNoAndCarTwoDateBetween(@Param("itemName") String itemName,
                                                                    @Param("siteNo") Integer siteNo,
+                                                                   @Param("clientType") String clientType,
                                                                    @Param("startDate") String startDate,
                                                                    @Param("endDate") String endDate);
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
@@ -59,7 +61,8 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
     TicketWeight findTicketWithMaxTicketIdBySiteNo(@Param("siteNo") Integer siteNo);
 
     @Query("SELECT t.carTwoDate, SUM(t.netWeight) FROM TicketWeight t " +
-            "WHERE t.itemName = :itemName " +
+            "WHERE (:itemName IS NULL OR t.itemName = :itemName)" +
+            "AND (:clientType IS NULL OR t.clientType = :clientType )" +
             "AND (:siteNo IS NULL OR t.id.siteNo = :siteNo) " +
             "AND (:centerId IS NULL OR t.center.centerId = :centerId) " +
             "AND (:villageId IS NULL OR t.village.villageId = :villageId) " +
@@ -70,6 +73,7 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
             @Param("siteNo") Integer siteNo,
             @Param("centerId") Integer centerId,
             @Param("villageId") Integer villageId,
+            @Param("clientType") String clientType,
             @Param("startDate") String startDate,
             @Param("endDate") String endDate
     );
@@ -78,7 +82,7 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
     @Query("SELECT t.center.centerName, SUM(t.netWeight) " +
             "FROM TicketWeight t " +
             "WHERE t.itemType = :itemType " +
-            "AND t.id.siteNo NOT IN (3) " + // Exclude siteNo 3
+            "AND t.id.siteNo NOT IN (3) " +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y') " +
             "GROUP BY t.center.centerName")
     List<Object[]> getCenterNetWeights(

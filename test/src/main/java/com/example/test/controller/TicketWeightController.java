@@ -28,12 +28,13 @@ public class TicketWeightController {
     //total net weight by item name w/wo siteNo
     @GetMapping("/itemName/weight")
     public BigDecimal getTotalNetWeightByItemNameSiteNoAndDate(
-            @RequestParam("itemName") String itemName,
+            @RequestParam(value = "itemName", required = false) String itemName,
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
+            @RequestParam(value = "clientType", required = false) String clientType,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
     ) {
-        BigDecimal totalNetWeight = ticketWeightService.getTotalNetWeightByItemNameAndDate(itemName, siteNo, startDate, endDate);
+        BigDecimal totalNetWeight = ticketWeightService.getTotalNetWeightByItemNameAndDate(itemName, siteNo, clientType, startDate, endDate);
         return totalNetWeight;
     }
 
@@ -49,17 +50,18 @@ public class TicketWeightController {
         return totalNetWeight;
     }
 
-    //map of date: net weight for each item name filters: siteNo, center, village
+    //map of date: net weight for each item name filters: siteNo, center, village, clientType
     @GetMapping("/itemName-site/weight-date-list")
     public Map<String, BigDecimal> getNetWeightByDate(
-            @RequestParam("itemName") String itemName,
+            @RequestParam(value = "itemName", required = false) String itemName,
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
             @RequestParam(value = "centerId", required = false) Integer centerId,
             @RequestParam(value = "villageId", required = false) Integer villageId,
+            @RequestParam(value = "clientType", required = false) String clientType,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
     ) {
-        Map<String, BigDecimal> netWeightMap = ticketWeightService.getDateNetWeightsMapByItemNameVillageCenter(itemName, siteNo, centerId, villageId, startDate, endDate);
+        Map<String, BigDecimal> netWeightMap = ticketWeightService.getDateNetWeightsMapByItemNameVillageCenter(itemName, siteNo, centerId, villageId, clientType, startDate, endDate);
         return netWeightMap;
     }
 

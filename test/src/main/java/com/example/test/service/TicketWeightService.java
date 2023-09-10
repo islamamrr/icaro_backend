@@ -23,11 +23,11 @@ public class TicketWeightService {
     @Autowired
     private TicketWeightRepo ticketWeightRepo;
 
-    public BigDecimal getTotalNetWeightByItemNameAndDate(String itemName, Integer siteNo, LocalDate startDate, LocalDate endDate) {
+    public BigDecimal getTotalNetWeightByItemNameAndDate(String itemName, Integer siteNo, String clientType, LocalDate startDate, LocalDate endDate) {
         String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
-        BigDecimal weightKg = ticketWeightRepo.getTotalNetWeightByItemNameSiteNoAndCarTwoDateBetween(itemName, siteNo, formattedStartDate, formattedEndDate);
+        BigDecimal weightKg = ticketWeightRepo.getTotalNetWeightByItemNameSiteNoAndCarTwoDateBetween(itemName, siteNo, clientType, formattedStartDate, formattedEndDate);
         if (weightKg != null)
             return weightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
         else
@@ -45,12 +45,19 @@ public class TicketWeightService {
             return null;
     }
 
-    public Map<String, BigDecimal> getDateNetWeightsMapByItemNameVillageCenter(String itemName, Integer siteNo, Integer centerId, Integer villageId, LocalDate startDate, LocalDate endDate) {
+    public Map<String, BigDecimal> getDateNetWeightsMapByItemNameVillageCenter(String itemName, Integer siteNo, Integer centerId, Integer villageId, String clientType, LocalDate startDate, LocalDate endDate) {
         String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
+        if (clientType == null || clientType.isEmpty()) {
+            clientType = null;
+        }
+        if (itemName == null || itemName.isEmpty()) {
+            itemName = null;
+        }
+
         List<Object> results;
-        results = ticketWeightRepo.getDateNetWeightsMapByItemNameVillageCenter(itemName, siteNo, centerId, villageId, formattedStartDate, formattedEndDate);
+        results = ticketWeightRepo.getDateNetWeightsMapByItemNameVillageCenter(itemName, siteNo, centerId, villageId, clientType, formattedStartDate, formattedEndDate);
 
         Map<String, BigDecimal> netWeightMap = new LinkedHashMap<>();
 
@@ -240,6 +247,7 @@ public class TicketWeightService {
             BigDecimal netWeight = netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
 
             centerNetWeights.put(centerName, netWeight);
+
         }
 
         return centerNetWeights;
