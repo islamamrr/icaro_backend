@@ -15,7 +15,6 @@ public class TicketWeightDTO {
     private String itemType;
     private String itemName;
     private String clientName;
-    private String clientType;
     private String driverName;
     private String vehicleNumber;
     private Integer firstWeight;
