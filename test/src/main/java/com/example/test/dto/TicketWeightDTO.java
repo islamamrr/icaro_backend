@@ -24,7 +24,6 @@ public class TicketWeightDTO {
     private String carOneTime;
     private String carTwoTime;
     private String enterMethod;
-    private Integer siteNo;
 
     public static TicketWeightDTO toDto(TicketWeight entity) {
         return TicketWeightDTO.builder()
@@ -44,7 +43,6 @@ public class TicketWeightDTO {
                 .carOneTime(entity.getCarOneTime() == null ? null : entity.getCarOneTime())
                 .carTwoTime(entity.getCarTwoTime() == null ? null : entity.getCarTwoTime())
                 .enterMethod(entity.getEnterMethod() == null ? null : entity.getEnterMethod())
-                .siteNo(entity.getId().getSiteNo() == null ? null : entity.getId().getSiteNo())
                 .build();
     }
 }

@@ -1,8 +1,10 @@
 package com.example.test.service;
 
 import com.example.test.dto.TicketWeightUpdateRequest;
+import com.example.test.model.Center;
 import com.example.test.model.CompositeKey;
 import com.example.test.model.TicketWeight;
+import com.example.test.repository.CenterRepo;
 import com.example.test.repository.TicketWeightRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,25 @@ public class TicketWeightService {
 
     @Autowired
     private TicketWeightRepo ticketWeightRepo;
+    @Autowired
+    private CenterRepo centerRepo;
 
     public BigDecimal getTotalNetWeightByItemNameAndDate(String itemName, Integer siteNo, String clientType, LocalDate startDate, LocalDate endDate) {
         String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
         BigDecimal weightKg = ticketWeightRepo.getTotalNetWeightByItemNameSiteNoAndCarTwoDateBetween(itemName, siteNo, clientType, formattedStartDate, formattedEndDate);
+        if (weightKg != null)
+            return weightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
+        else
+            return null;
+    }
+
+    public BigDecimal getTotalOutputRejectedNetWeightSiteNoAndDate(String clientType, LocalDate startDate, LocalDate endDate) {
+        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+
+        BigDecimal weightKg = ticketWeightRepo.getTotalNetWeightByItemNameSiteNoAndCarTwoDateBetween(null, 3, clientType, formattedStartDate, formattedEndDate);
         if (weightKg != null)
             return weightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
         else
@@ -43,6 +58,26 @@ public class TicketWeightService {
             return weightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
         else
             return null;
+    }
+
+    public BigDecimal getTotalOutputNetWeightBySiteNoAndDate(LocalDate startDate, LocalDate endDate) {
+        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+
+        String itemType = "مخرجات";
+
+        BigDecimal outputWeightKg = ticketWeightRepo.getTotalNetWeightByItemTypeSiteNoAndCarTwoDateBetween(itemType, null, formattedStartDate, formattedEndDate);
+        BigDecimal marfoodatWeightKg = ticketWeightRepo.getTotalNetWeightByItemTypeSiteNoAndCarTwoDateBetween(null, 3, formattedStartDate, formattedEndDate);
+
+        if (outputWeightKg == null)
+            outputWeightKg = BigDecimal.ZERO;
+        if (marfoodatWeightKg == null)
+            marfoodatWeightKg = BigDecimal.ZERO;
+
+        BigDecimal outputWeight = outputWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
+        BigDecimal marfoodatWeight = marfoodatWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
+
+        return outputWeight.add(marfoodatWeight);
     }
 
     public Map<String, BigDecimal> getDateNetWeightsMapByItemNameVillageCenter(String itemName, Integer siteNo, Integer centerId, Integer villageId, String clientType, LocalDate startDate, LocalDate endDate) {
@@ -110,6 +145,37 @@ public class TicketWeightService {
         return netWeightsByItemType;
     }
 
+    public BigDecimal[] getOutputNetWeightsByDate(LocalDate startDate, LocalDate endDate) {
+        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+
+        String itemType = "مخرجات";
+        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السمبلاوين", "مصنع المنزلة"};
+
+        BigDecimal[] netWeightsByItemType = new BigDecimal[5];
+        for (int i = 1; i <= 6; i++) {
+            if (i == 3) // المدفن
+                continue;
+            Integer siteNo = i;
+            BigDecimal netWeightKg = ticketWeightRepo.getAllNetWeightByItemTypeAndDate(itemType, siteNo, formattedStartDate, formattedEndDate);
+            BigDecimal netWeight = (!Objects.equals(netWeightKg, BigDecimal.ZERO) && netWeightKg != null) ? netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN) : null;
+
+            BigDecimal rejectedNetWeight = getTotalNetWeightByItemNameAndDate(null, 3, clientTypes[i - 1], startDate, endDate);
+            if (rejectedNetWeight == null)
+                rejectedNetWeight = BigDecimal.ZERO;
+
+            if (netWeight == null)
+                netWeight = BigDecimal.ZERO;
+
+            if (i > 3)
+                netWeightsByItemType[i - 2] = netWeight.add(rejectedNetWeight);
+            else
+                netWeightsByItemType[i - 1] = netWeight.add(rejectedNetWeight);
+
+        }
+        return netWeightsByItemType;
+
+    }
 
 //    public TicketWeight getHighestTicketId(Integer siteNo) {
 //        TicketWeight maxTicketId = ticketWeightRepo.findTicketWithMaxTicketIdBySiteNo(siteNo);
@@ -222,7 +288,28 @@ public class TicketWeightService {
             if (i == 3) // المدفن
                 continue;
             Integer siteNo = i;
-            BigDecimal netWeightKg = ticketWeightRepo.getAllNetWeightByItemNameAndDate(itemName, siteNo, formattedStartDate, formattedEndDate);
+            BigDecimal netWeightKg = ticketWeightRepo.getAllNetWeightByItemNameAndDate(itemName, null, siteNo, formattedStartDate, formattedEndDate);
+            BigDecimal netWeight = (!Objects.equals(netWeightKg, BigDecimal.ZERO) && netWeightKg != null) ? netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN) : null;
+
+            if (i > 3)
+                netWeightsByItemName[i - 2] = netWeight;
+            else
+                netWeightsByItemName[i - 1] = netWeight;
+        }
+        return netWeightsByItemName;
+    }
+
+    public BigDecimal[] getOutputRejectedNetWeightsByDate(LocalDate startDate, LocalDate endDate) {
+        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+
+        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السمبلاوين", "مصنع المنزلة"};
+        BigDecimal[] netWeightsByItemName = new BigDecimal[5];
+        for (int i = 1; i <= 6; i++) {
+            if (i == 3) // المدفن
+                continue;
+
+            BigDecimal netWeightKg = ticketWeightRepo.getAllNetWeightByItemNameAndDate(null, clientTypes[i - 1], 3, formattedStartDate, formattedEndDate);
             BigDecimal netWeight = (!Objects.equals(netWeightKg, BigDecimal.ZERO) && netWeightKg != null) ? netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN) : null;
 
             if (i > 3)
@@ -240,16 +327,34 @@ public class TicketWeightService {
         List<Object[]> results = ticketWeightRepo.getCenterNetWeights(formattedStartDate, formattedEndDate, itemType);
         Map<String, BigDecimal> centerNetWeights = new HashMap<>();
 
+        Set<String> processedCenterNames = new HashSet<>();
+
         for (Object[] result : results) {
             String centerName = (String) result[0];
             Long netWeightLong = (Long) result[1];
+
             BigDecimal netWeightKg = (netWeightLong != null) ? BigDecimal.valueOf(netWeightLong) : BigDecimal.ZERO;
             BigDecimal netWeight = netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
 
             centerNetWeights.put(centerName, netWeight);
 
+            processedCenterNames.add(centerName);
+        }
+
+        // Iterate through all centers to add those that were not in the result set with netWeight set to zero
+        // This ensures that all centers are included in the response
+        List<Center> allCenterNames = getAllCenters(); // You need to implement this method to fetch all center names
+
+        for (Center centerName : allCenterNames) {
+            if (!processedCenterNames.contains(centerName.getCenterName())) {
+                centerNetWeights.put(centerName.getCenterName(), BigDecimal.ZERO);
+            }
         }
 
         return centerNetWeights;
+    }
+
+    public List<Center> getAllCenters() {
+        return centerRepo.findAll();
     }
 }

@@ -37,6 +37,15 @@ public class TicketWeightController {
         BigDecimal totalNetWeight = ticketWeightService.getTotalNetWeightByItemNameAndDate(itemName, siteNo, clientType, startDate, endDate);
         return totalNetWeight;
     }
+    @GetMapping("/output-rejected/weight")
+    public BigDecimal getTotalOutputRejectedNetWeightSiteNoAndDate(
+            @RequestParam(value = "clientType", required = false) String clientType,
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
+    ) {
+        BigDecimal totalNetWeight = ticketWeightService.getTotalOutputRejectedNetWeightSiteNoAndDate(clientType, startDate, endDate);
+        return totalNetWeight;
+    }
 
     //total net weight by item type w/wo siteNo
     @GetMapping("/itemType/weight")
@@ -47,6 +56,15 @@ public class TicketWeightController {
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
     ) {
         BigDecimal totalNetWeight = ticketWeightService.getTotalNetWeightByItemTypeAndDate(itemType, siteNo, startDate, endDate);
+        return totalNetWeight;
+    }
+
+    @GetMapping("/output/weight")
+    public BigDecimal getTotalOutputNetWeightBySiteNoAndDate(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
+    ) {
+        BigDecimal totalNetWeight = ticketWeightService.getTotalOutputNetWeightBySiteNoAndDate(startDate, endDate);
         return totalNetWeight;
     }
 
@@ -92,6 +110,15 @@ public class TicketWeightController {
         return netWeightsByItemType;
     }
 
+    @RequestMapping(value = "/output/weight-list", method = RequestMethod.GET)
+    public BigDecimal[] getOutputNetWeightsByDate(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
+    ) {
+        BigDecimal[] netWeightsByItemType = ticketWeightService.getOutputNetWeightsByDate( startDate, endDate);
+        return netWeightsByItemType;
+    }
+
     @GetMapping("/itemName/weight-list")
     public BigDecimal[] getNetWeightsByItemNameAndDate(
             @RequestParam(value = "itemName") String itemName,
@@ -99,6 +126,15 @@ public class TicketWeightController {
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
     ) {
         BigDecimal[] netWeightsByItemName = ticketWeightService.getNetWeightsByItemNameAndDate(itemName, startDate, endDate);
+        return netWeightsByItemName;
+    }
+
+    @GetMapping("/output-rejected/weight-list")
+    public BigDecimal[] getOutputRejectedNetWeightsByDate(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
+    ) {
+        BigDecimal[] netWeightsByItemName = ticketWeightService.getOutputRejectedNetWeightsByDate(startDate, endDate);
         return netWeightsByItemName;
     }
 

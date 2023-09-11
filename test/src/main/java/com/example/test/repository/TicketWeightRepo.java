@@ -24,7 +24,7 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
                                                                    @Param("startDate") String startDate,
                                                                    @Param("endDate") String endDate);
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
-            "WHERE t.itemType = :itemType " +
+            "WHERE (:itemType IS NULL OR t.itemType = :itemType) " +
             "AND ((:siteNo IS NULL AND t.id.siteNo <> 3) OR (t.id.siteNo = :siteNo))" +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') " +
             "BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y')")
@@ -46,10 +46,12 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
                                                 @Param("endDate") String endDate);
 
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
-            "WHERE t.itemName = :itemName " +
+            "WHERE (:itemName IS NULL or t.itemName = :itemName) " +
+            "AND (:clientType IS NULL or t.clientType = :clientType) " +
             "AND t.id.siteNo = :siteNo " +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y')")
     BigDecimal getAllNetWeightByItemNameAndDate(@Param("itemName") String itemName,
+                                                @Param("clientType") String clientType,
                                                 @Param("siteNo") Integer siteNo,
                                                 @Param("startDate") String startDate,
                                                 @Param("endDate") String endDate);
