@@ -33,8 +33,10 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
                                                                    @Param("startDate") String startDate,
                                                                    @Param("endDate") String endDate);
 
-    @Query("SELECT t FROM TicketWeight t WHERE t.id.siteNo = :siteNo AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') = STR_TO_DATE(:selectedDate, '%d-%b-%y')")
-    List<TicketWeight> findAllBySiteNoAndDateBetween(Integer siteNo, String selectedDate);
+    @Query("SELECT t FROM TicketWeight t WHERE t.id.siteNo = :siteNo " +
+            "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') " +
+            "BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y')")
+    List<TicketWeight> findAllBySiteNoAndDateBetween(Integer siteNo, String startDate, String endDate);
 
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
             "WHERE t.itemType = :itemType " +
@@ -85,6 +87,7 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
             "FROM TicketWeight t " +
             "WHERE t.itemType = :itemType " +
             "AND t.id.siteNo NOT IN (3) " +
+            "AND t.center.centerId NOT IN (24, 25) " +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y') " +
             "GROUP BY t.center.centerName")
     List<Object[]> getCenterNetWeights(

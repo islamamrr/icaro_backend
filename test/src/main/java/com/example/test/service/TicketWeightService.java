@@ -119,11 +119,12 @@ public class TicketWeightService {
         return netWeightMap;
     }
 
-    public List<TicketWeight> getTicketsBySiteNoAndDate(Integer siteNo, LocalDate selectedDate) {
+    public List<TicketWeight> getTicketsBySiteNoAndDate(Integer siteNo, LocalDate startDate, LocalDate endDate) {
 
-        String formattedSelectedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
-        return ticketWeightRepo.findAllBySiteNoAndDateBetween(siteNo, formattedSelectedDate);
+        return ticketWeightRepo.findAllBySiteNoAndDateBetween(siteNo, formattedStartDate, formattedEndDate);
     }
 
     public BigDecimal[] getNetWeightsByItemTypeAndDate(String itemType, LocalDate startDate, LocalDate endDate) {
@@ -320,14 +321,55 @@ public class TicketWeightService {
         return netWeightsByItemName;
     }
 
+//    public Map<String, BigDecimal> getCenterNetWeights(LocalDate startDate, LocalDate endDate, String itemType) {
+//        String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+//        String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
+//
+//        List<Center> allCenterNames = getAllCenters(); // You need to implement this method to fetch all center names
+//
+//        List<Object[]> results = ticketWeightRepo.getCenterNetWeights(formattedStartDate, formattedEndDate, itemType);
+//
+//
+//        Map<String, BigDecimal> centerNetWeights = new HashMap<>();
+//
+//        Set<String> processedCenterNames = new HashSet<>();
+//
+//        for (Object[] result : results) {
+//            String centerName = (String) result[0];
+//            Long netWeightLong = (Long) result[1];
+//
+//            BigDecimal netWeightKg = (netWeightLong != null) ? BigDecimal.valueOf(netWeightLong) : BigDecimal.ZERO;
+//            BigDecimal netWeight = netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
+//
+//            centerNetWeights.put(centerName, netWeight);
+//
+//            processedCenterNames.add(centerName);
+//        }
+//
+//
+//        for (Center centerName : allCenterNames) {
+//            if (!processedCenterNames.contains(centerName.getCenterName())) {
+//                centerNetWeights.put(centerName.getCenterName(), BigDecimal.ZERO);
+//            }
+//        }
+//
+//        return centerNetWeights;
+//    }
+
     public Map<String, BigDecimal> getCenterNetWeights(LocalDate startDate, LocalDate endDate, String itemType) {
         String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
-        List<Object[]> results = ticketWeightRepo.getCenterNetWeights(formattedStartDate, formattedEndDate, itemType);
+        List<Center> allCenterNames = getAllCenters();
+
         Map<String, BigDecimal> centerNetWeights = new HashMap<>();
 
-        Set<String> processedCenterNames = new HashSet<>();
+        // Initialize the map with all center names and a default weight of zero
+        for (Center centerName : allCenterNames) {
+            centerNetWeights.put(centerName.getCenterName(), BigDecimal.ZERO);
+        }
+
+        List<Object[]> results = ticketWeightRepo.getCenterNetWeights(formattedStartDate, formattedEndDate, itemType);
 
         for (Object[] result : results) {
             String centerName = (String) result[0];
@@ -336,25 +378,15 @@ public class TicketWeightService {
             BigDecimal netWeightKg = (netWeightLong != null) ? BigDecimal.valueOf(netWeightLong) : BigDecimal.ZERO;
             BigDecimal netWeight = netWeightKg.divide(new BigDecimal(1000), 1, RoundingMode.HALF_DOWN);
 
+            // Update the map with the actual net weight for the center name
             centerNetWeights.put(centerName, netWeight);
-
-            processedCenterNames.add(centerName);
-        }
-
-        // Iterate through all centers to add those that were not in the result set with netWeight set to zero
-        // This ensures that all centers are included in the response
-        List<Center> allCenterNames = getAllCenters(); // You need to implement this method to fetch all center names
-
-        for (Center centerName : allCenterNames) {
-            if (!processedCenterNames.contains(centerName.getCenterName())) {
-                centerNetWeights.put(centerName.getCenterName(), BigDecimal.ZERO);
-            }
         }
 
         return centerNetWeights;
     }
 
     public List<Center> getAllCenters() {
-        return centerRepo.findAll();
+        List<Integer> excludedCenterIds = Arrays.asList(24, 25);
+        return centerRepo.findAllByCenterIdNotIn(excludedCenterIds);
     }
 }

@@ -87,9 +87,11 @@ public class TicketWeightController {
     @GetMapping("/all")
     public List<TicketWeightDTO> getTicketsBySiteNoAndDate(
             @RequestParam("siteNo") Integer siteNo,
-            @RequestParam("selectedDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate selectedDate
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
+//            @RequestParam("selectedDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate selectedDate
     ) {
-        List<TicketWeight> tickets = ticketWeightService.getTicketsBySiteNoAndDate(siteNo, selectedDate);
+        List<TicketWeight> tickets = ticketWeightService.getTicketsBySiteNoAndDate(siteNo, startDate, endDate);
 
         List<TicketWeightDTO> ticketWeightDTOS = new ArrayList<>();
 
