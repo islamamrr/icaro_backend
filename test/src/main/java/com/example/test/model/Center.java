@@ -21,6 +21,9 @@ public class Center {
     @Column(name = "Center_Name")
     private String centerName;
 
+    @Column(name = "Target")
+    private Integer target;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "City_ID")
     private City city;
