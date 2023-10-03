@@ -61,10 +61,12 @@ public class TicketWeightController {
 
     @GetMapping("/output/weight")
     public BigDecimal getTotalOutputNetWeightBySiteNoAndDate(
+            @RequestParam(value = "siteNo", required = false) Integer siteNo,
+            @RequestParam(value = "clientType", required = false) String clientType,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
     ) {
-        BigDecimal totalNetWeight = ticketWeightService.getTotalOutputNetWeightBySiteNoAndDate(startDate, endDate);
+        BigDecimal totalNetWeight = ticketWeightService.getTotalOutputNetWeightBySiteNoAndDate(startDate, endDate, clientType, siteNo);
         return totalNetWeight;
     }
 
@@ -164,6 +166,15 @@ public class TicketWeightController {
             @RequestParam("itemType") String itemType
     ) {
         Map<String, BigDecimal> centerNetWeights = ticketWeightService.getCenterNetWeights(startDate, endDate, itemType);
+        return ResponseEntity.ok(centerNetWeights);
+    }
+    @GetMapping("/centers-accepted-net-weight-list")
+    public ResponseEntity<Map<String, BigDecimal>> getCenterAcceptedNetWeights(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate,
+            @RequestParam("itemName") String itemName
+    ) {
+        Map<String, BigDecimal> centerNetWeights = ticketWeightService.getCenterAcceptedNetWeights(startDate, endDate, itemName);
         return ResponseEntity.ok(centerNetWeights);
     }
 }

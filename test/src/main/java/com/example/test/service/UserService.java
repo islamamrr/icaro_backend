@@ -37,7 +37,7 @@ public class UserService {
 
     public String generateJWT(User user) {
         // Set the JWT expiration time (2 hrs)
-        long expirationTimeInMillis = System.currentTimeMillis() + (60 * 60 * 2000);
+        long expirationTimeInMillis = System.currentTimeMillis() + (60 * 60 * 8000);
 
         // Build the JWT
         String token = Jwts.builder()

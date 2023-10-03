@@ -26,12 +26,14 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
     @Query("SELECT SUM(t.netWeight) FROM TicketWeight t " +
             "WHERE (:itemType IS NULL OR t.itemType = :itemType) " +
             "AND ((:siteNo IS NULL AND t.id.siteNo <> 3) OR (t.id.siteNo = :siteNo))" +
+            "AND (:clientType IS NULL or t.clientType = :clientType) " +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') " +
             "BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y')")
     BigDecimal getTotalNetWeightByItemTypeSiteNoAndCarTwoDateBetween(@Param("itemType") String itemType,
-                                                                   @Param("siteNo") Integer siteNo,
-                                                                   @Param("startDate") String startDate,
-                                                                   @Param("endDate") String endDate);
+                                                                     @Param("siteNo") Integer siteNo,
+                                                                     @Param("clientType") String clientType,
+                                                                     @Param("startDate") String startDate,
+                                                                     @Param("endDate") String endDate);
 
     @Query("SELECT t FROM TicketWeight t WHERE t.id.siteNo = :siteNo " +
             "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') " +
@@ -94,5 +96,18 @@ public interface TicketWeightRepo extends JpaRepository<TicketWeight, CompositeK
             String startDate,
             String endDate,
             String itemType
+    );
+
+    @Query("SELECT t.center.centerName, SUM(t.netWeight) " +
+            "FROM TicketWeight t " +
+            "WHERE t.itemName = :itemName " +
+            "AND t.id.siteNo NOT IN (3) " +
+            "AND t.center.centerId NOT IN (24, 25) " +
+            "AND STR_TO_DATE(t.carTwoDate, '%d-%b-%y') BETWEEN STR_TO_DATE(:startDate, '%d-%b-%y') AND STR_TO_DATE(:endDate, '%d-%b-%y') " +
+            "GROUP BY t.center.centerName")
+    List<Object[]> getAcceptedCenterNetWeights(
+            String startDate,
+            String endDate,
+            String itemName
     );
 }
