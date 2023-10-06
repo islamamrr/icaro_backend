@@ -16,6 +16,7 @@ public class TicketWeightDTO {
     private String clientType;
     private String villageName;
     private String itemType;
+    private String itemName;
     private String vehicleNumber;
     private Integer firstWeight;
     private Integer secondWeight;
@@ -33,6 +34,7 @@ public class TicketWeightDTO {
                 .clientType(entity.getClientType() == null ? null : entity.getClientType())
                 .villageName(entity.getVillage() == null ? null : entity.getVillage().getVillageName())
                 .itemType(entity.getItemType() == null ? null : entity.getItemType())
+                .itemName(entity.getItemName() == null ? null : entity.getItemName())
                 .vehicleNumber(entity.getVehicleNumber() == null ? null : entity.getVehicleNumber())
                 .firstWeight(entity.getFirstWeight() == null ? null : entity.getFirstWeight())
                 .secondWeight(entity.getSecondWeight() == null ? null : entity.getSecondWeight())
@@ -43,7 +45,6 @@ public class TicketWeightDTO {
                 .enterMethod(entity.getEnterMethod() == null ? null : entity.getEnterMethod())
                 .driverName(entity.getDriverName() == null ? null : entity.getDriverName())
 //                .carOneDate(entity.getCarOneDate() == null ? null : entity.getCarOneDate())
-//                .itemName(entity.getItemName() == null ? null : entity.getItemName())
 //                .centerName(entity.getCenter().getCenterName() == null ? null : entity.getCenter().getCenterName())
                 .build();
     }
