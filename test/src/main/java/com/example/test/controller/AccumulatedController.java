@@ -23,6 +23,13 @@ public class AccumulatedController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/percentage-by-itemname")
+    public ResponseEntity<Map<Integer, Integer>> getAccumulatedPercentageByItemName(
+            @RequestParam(value = "itemName", required = false) String itemName) {
+        Map<Integer, Integer> result = accumulatedService.getAccumulatedPercentageByItemName(itemName);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/weight")
     public ResponseEntity<Map<String, Integer>> getAccumulatedWeightBySiteNo(
             @RequestParam(value = "siteNo", required = false) Integer siteNo) {

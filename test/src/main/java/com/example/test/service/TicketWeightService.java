@@ -67,11 +67,7 @@ public class TicketWeightService {
         String itemType = "مخرجات";
 
         BigDecimal outputWeightKg = ticketWeightRepo.getTotalNetWeightByItemTypeSiteNoAndCarTwoDateBetween(itemType, siteNo, null, formattedStartDate, formattedEndDate);
-        log.info("bobobobobo");
-        log.info(String.valueOf(outputWeightKg));
         BigDecimal marfoodatWeightKg = ticketWeightRepo.getTotalNetWeightByItemTypeSiteNoAndCarTwoDateBetween(null, 3, clientType, formattedStartDate, formattedEndDate);
-        log.info("kikikikikki");
-        log.info(String.valueOf(marfoodatWeightKg));
 
         if (outputWeightKg == null)
             outputWeightKg = BigDecimal.ZERO;
@@ -155,7 +151,7 @@ public class TicketWeightService {
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
         String itemType = "مخرجات";
-        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السمبلاوين", "مصنع المنزلة"};
+        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السنبلاوين", "مصنع المنزلة"};
 
         BigDecimal[] netWeightsByItemType = new BigDecimal[5];
         for (int i = 1; i <= 6; i++) {
@@ -256,7 +252,7 @@ public class TicketWeightService {
         String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
         String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
-        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السمبلاوين", "مصنع المنزلة"};
+        String[] clientTypes = {"مصنع اجا", "مصنع سندوب", "", "مصنع بلقاس", "مصنع السنبلاوين", "مصنع المنزلة"};
         BigDecimal[] netWeightsByItemName = new BigDecimal[5];
         for (int i = 1; i <= 6; i++) {
             if (i == 3) // المدفن

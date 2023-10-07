@@ -12,8 +12,15 @@ import java.util.List;
 
 @Repository
 public interface AccumulatedRepo extends JpaRepository<Accumulated, AccumulatedCompositeKey> {
-    @Query("SELECT a.id.itemName, a.percentage FROM Accumulated a WHERE :siteNo IS NULL OR a.id.siteNo = :siteNo")
-    List<Object[]> findAccumulatedPercentage(@Param("siteNo") Integer siteNo);
+    @Query("SELECT a.id.itemName, a.percentage FROM Accumulated a " +
+            "WHERE (:siteNo IS NULL OR a.id.siteNo = :siteNo)")
+    List<Object[]> findAccumulatedPercentage(
+            @Param("siteNo") Integer siteNo);
+
+    @Query("SELECT a.id.siteNo, a.percentage FROM Accumulated a " +
+            "WHERE (:itemName IS NULL OR a.id.itemName = :itemName)")
+    List<Object[]> findAccumulatedPercentageByItemName(
+            @Param("itemName") String itemName);
 
     @Query("SELECT a.id.itemName, a.accumulatedWeight FROM Accumulated a WHERE :siteNo IS NULL OR a.id.siteNo = :siteNo")
     List<Object[]> findAccumulatedWeight(@Param("siteNo") Integer siteNo);
