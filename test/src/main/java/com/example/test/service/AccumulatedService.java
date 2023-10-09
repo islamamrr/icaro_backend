@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -94,6 +95,14 @@ public class AccumulatedService {
 
     @Scheduled(cron = "0 0 23 * * ?", zone = "Africa/Cairo")
     public void performTask() {
+        Date d = new Date();
+        TimeZone tZ = TimeZone.getDefault();
+        SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dF.setTimeZone(tZ);
+        String fd = dF.format(d);
+        log.info("Formatted Date and Time: " + fd);
+
+
         String acceptedInputName = "مخلفات  تصلح للمعالجة";
         String asmedaName = "اسمدة عضوية";
         String waqoodName = "وقود بديل";

@@ -21,7 +21,7 @@ public class CenterController {
         return centerService.getAllCenters();
     }
 
-    @PostMapping("/update-targets")
+    @PutMapping("/update-targets")
     public ResponseEntity<String> updateCenterTargets(@RequestBody Map<Integer, Integer> targetMap) {
         boolean updated = centerService.updateCenterTargets(targetMap);
 

@@ -2,13 +2,18 @@ package com.example.test.controller;
 
 import com.example.test.model.Accumulated;
 import com.example.test.service.AccumulatedService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+@Slf4j
 @RestController
 @CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com"}, allowCredentials = "true")
 @RequestMapping("/accumulated")
@@ -43,6 +48,20 @@ public class AccumulatedController {
             @RequestBody Map<String, Integer> percentageUpdates
     ) {
         try {
+
+            Date currentDate = new Date();
+
+            TimeZone defaultTimeZone = TimeZone.getDefault();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            dateFormat.setTimeZone(defaultTimeZone);
+
+            String formattedDateTime = dateFormat.format(currentDate);
+
+            log.info("Formatted Date and Time: " + formattedDateTime);
+            log.info("Time Zone: " + defaultTimeZone.getID());
+
             accumulatedService.updatePercentages(siteNo, percentageUpdates);
             return ResponseEntity.ok("Percentages updated successfully.");
         } catch (Exception e) {

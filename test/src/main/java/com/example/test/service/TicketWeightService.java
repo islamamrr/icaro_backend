@@ -190,6 +190,7 @@ public class TicketWeightService {
         TicketWeight newTicket = new TicketWeight();
 
         int maxTicketId = getMaxTicketId(siteNo);
+
         if (existingTicket.getId().getTicketId().equals(maxTicketId)) {
             newTicket.setId(existingTicket.getId()); // Keep the same ticketId
         } else {
