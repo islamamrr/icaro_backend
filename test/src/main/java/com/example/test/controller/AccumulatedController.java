@@ -48,20 +48,6 @@ public class AccumulatedController {
             @RequestBody Map<String, Integer> percentageUpdates
     ) {
         try {
-
-            Date currentDate = new Date();
-
-            TimeZone defaultTimeZone = TimeZone.getDefault();
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            dateFormat.setTimeZone(defaultTimeZone);
-
-            String formattedDateTime = dateFormat.format(currentDate);
-
-            log.info("Formatted Date and Time: " + formattedDateTime);
-            log.info("Time Zone: " + defaultTimeZone.getID());
-
             accumulatedService.updatePercentages(siteNo, percentageUpdates);
             return ResponseEntity.ok("Percentages updated successfully.");
         } catch (Exception e) {

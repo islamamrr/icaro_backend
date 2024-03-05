@@ -12,7 +12,9 @@ import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -93,15 +95,15 @@ public class AccumulatedService {
         }
     }
 
-    @Scheduled(cron = "0 0 23 * * ?", zone = "Africa/Cairo")
-    public void performTask() {
+    @Scheduled(cron = "0 00 23 * * ?", zone = "Africa/Cairo")
+    public void dailyUpdateAccumulatedWeights() {
         Date d = new Date();
         TimeZone tZ = TimeZone.getDefault();
         SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dF.setTimeZone(tZ);
         String fd = dF.format(d);
         log.info("Formatted Date and Time: " + fd);
-
+        log.info("%%%%%% ننننن %%%%%%");
 
         String acceptedInputName = "مخلفات  تصلح للمعالجة";
         String asmedaName = "اسمدة عضوية";
@@ -109,13 +111,32 @@ public class AccumulatedService {
         String marfoodatName = "مرفوضات";
         String mafroozatName = "مفروزات";
 
+        LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = LocalDate.now();
+        //Using yesterday's date as the updates would happen after midnight
+        LocalDate yesterdayDate = currentDate.minusDays(1);
 
-        BigDecimal[] acceptedInputsList = ticketWeightService.getNetWeightsByItemNameAndDate(acceptedInputName, currentDate, currentDate);
-        BigDecimal[] asmedaWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(asmedaName, currentDate, currentDate);
-        BigDecimal[] waqoodWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(waqoodName, currentDate, currentDate);
-        BigDecimal[] marfoodatWeightsList = ticketWeightService.getOutputRejectedNetWeightsByDate(currentDate, currentDate);
-        BigDecimal[] mafroozatWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(mafroozatName, currentDate, currentDate);
+        BigDecimal[] acceptedInputsList = ticketWeightService.getNetWeightsByItemNameAndDate(acceptedInputName, yesterdayDate, yesterdayDate);
+        BigDecimal[] asmedaWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(asmedaName, yesterdayDate, yesterdayDate);
+        BigDecimal[] waqoodWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(waqoodName, yesterdayDate, yesterdayDate);
+        BigDecimal[] marfoodatWeightsList = ticketWeightService.getOutputRejectedNetWeightsByDate(yesterdayDate, yesterdayDate);
+        BigDecimal[] mafroozatWeightsList = ticketWeightService.getNetWeightsByItemNameAndDate(mafroozatName, yesterdayDate, yesterdayDate);
+
+        log.info("yesterdayDate");
+        log.info(String.valueOf(yesterdayDate));
+        log.info("currentDateTime");
+        log.info(String.valueOf(currentDateTime));
+
+        log.info("acceptedInputsList");
+        log.info(Arrays.toString(acceptedInputsList));
+        log.info("asmedaWeightsList");
+        log.info(Arrays.toString(asmedaWeightsList));
+        log.info("waqoodWeightsList");
+        log.info(Arrays.toString(waqoodWeightsList));
+        log.info("marfoodatWeightsList");
+        log.info(Arrays.toString(marfoodatWeightsList));
+        log.info("mafroozatWeightsList");
+        log.info(Arrays.toString(mafroozatWeightsList));
 
         for (int i = 0; i < acceptedInputsList.length; i++) {
             Map<String, Integer> percentages = new HashMap<>();
@@ -159,11 +180,24 @@ public class AccumulatedService {
             updates.put(marfoodatName, marfoodatNewAccumulatedWeight.intValue());
             updates.put(mafroozatName, mafroozatNewAccumulatedWeight.intValue());
 
+            log.info("هههه");
+            log.info("asmedaNewAccumulatedWeight");
+            log.info(String.valueOf(asmedaNewAccumulatedWeight));
+            log.info("waqoodNewAccumulatedWeight");
+            log.info(String.valueOf(waqoodNewAccumulatedWeight));
+            log.info("marfoodatNewAccumulatedWeight");
+            log.info(String.valueOf(marfoodatNewAccumulatedWeight));
+            log.info("mafroozatNewAccumulatedWeight");
+            log.info(String.valueOf(mafroozatNewAccumulatedWeight));
+
             if (i >= 2) {
+                log.info("site #" + (i + 2));
                 updateWeights(i + 2, updates);
             } else {
+                log.info("site #" + (i + 1));
                 updateWeights(i + 1, updates);
             }
         }
+//        return String.valueOf(currentDateTime);
     }
 }

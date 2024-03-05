@@ -2,11 +2,14 @@ package com.example.test.service;
 
 import com.example.test.model.Center;
 import com.example.test.repository.CenterRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CenterService {
 
@@ -38,14 +41,20 @@ public class CenterService {
         }
     }
 
-    public Map<Integer, Integer> getAllTargets() {
+    public Map<String, Integer> getAllTargets() {
         List<Center> centers = centerRepo.findAllByCenterIdNotIn(Arrays.asList(24, 25));
-        Map<Integer, Integer> targetsMap = new HashMap<>();
+//        List<Center> sortedCenters = centers.stream()
+//                .sorted(Comparator.comparingInt(Center::getCenterId))
+//                .collect(Collectors.toList());
+
+        Map<String, Integer> targetsMap = new HashMap<>();
 
         for (Center center : centers) {
-            targetsMap.put(center.getCenterId(), center.getTarget());
+            targetsMap.put(center.getCenterName(), center.getTarget());
         }
 
+        log.info("targetsMap");
+        log.info(targetsMap.toString());
         return targetsMap;
     }
 }

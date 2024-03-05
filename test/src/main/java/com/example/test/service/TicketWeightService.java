@@ -189,13 +189,13 @@ public class TicketWeightService {
 
         TicketWeight newTicket = new TicketWeight();
 
-        int maxTicketId = getMaxTicketId(siteNo);
+//        int maxTicketId = getMaxTicketId(siteNo);
 
-        if (existingTicket.getId().getTicketId().equals(maxTicketId)) {
+//        if (existingTicket.getId().getTicketId().equals(maxTicketId)) {
             newTicket.setId(existingTicket.getId()); // Keep the same ticketId
-        } else {
-            newTicket.setId(new CompositeKey(maxTicketId + 1, siteNo)); // Increment ticketId
-        }
+//        } else {
+//            newTicket.setId(new CompositeKey(maxTicketId + 1, siteNo)); // Increment ticketId
+//        }
 
         newTicket.setClientName(existingTicket.getClientName());
         newTicket.setClientType(existingTicket.getClientType());
