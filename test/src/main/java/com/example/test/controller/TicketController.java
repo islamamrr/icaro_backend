@@ -17,7 +17,7 @@
 //
 //@Slf4j
 //@RestController
-//@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com"}, allowCredentials = "true")
+//@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com", "https://www.dksolidwaste.com"}, allowCredentials = "true")
 //@RequestMapping("/tickets")
 //public class TicketController {
 //

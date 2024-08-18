@@ -5,6 +5,7 @@ import com.example.test.model.AccumulatedCompositeKey;
 import com.example.test.repository.AccumulatedRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,7 @@ public class AccumulatedService {
         return result;
     }
 
+    @Cacheable
     public void updatePercentages(Integer siteNo, Map<String, Integer> updates) {
         for (Map.Entry<String, Integer> entry : updates.entrySet()) {
             String itemName = entry.getKey();

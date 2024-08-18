@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com"}, allowCredentials = "true")
+@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com", "https://www.dksolidwaste.com"}, allowCredentials = "true")
 @RequestMapping("/api")
 public class UserController {
 

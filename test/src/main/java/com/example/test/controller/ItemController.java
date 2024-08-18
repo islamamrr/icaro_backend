@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com"}, allowCredentials = "true")
+@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com", "https://www.dksolidwaste.com"}, allowCredentials = "true")
 @RequestMapping("/items")
 public class ItemController {
     @Autowired

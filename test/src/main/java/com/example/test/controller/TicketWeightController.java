@@ -5,6 +5,7 @@ import com.example.test.dto.TicketWeightUpdateRequest;
 import com.example.test.model.TicketWeight;
 import com.example.test.service.TicketWeightService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.Map;
 import static com.example.test.dto.TicketWeightDTO.toDto;
 
 @RestController
-@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com"}, allowCredentials = "true")
+@CrossOrigin(value = {"http://localhost:63342", "http://www.dksolidwaste.com", "https://www.dksolidwaste.com"}, allowCredentials = "true")
 @RequestMapping("/tickets")
 public class TicketWeightController {
 
@@ -27,6 +28,7 @@ public class TicketWeightController {
 
     //total net weight by item name w/wo siteNo
     @GetMapping("/itemName/weight")
+    @Cacheable(value= "getTotalNetWeightByItemNameSiteNoAndDate")
     public BigDecimal getTotalNetWeightByItemNameSiteNoAndDate(
             @RequestParam(value = "itemName", required = false) String itemName,
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
@@ -38,6 +40,7 @@ public class TicketWeightController {
         return totalNetWeight;
     }
     @GetMapping("/output-rejected/weight")
+    @Cacheable(value= "getTotalOutputRejectedNetWeightSiteNoAndDate")
     public BigDecimal getTotalOutputRejectedNetWeightSiteNoAndDate(
             @RequestParam(value = "clientType", required = false) String clientType,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
@@ -49,6 +52,7 @@ public class TicketWeightController {
 
     //total net weight by item type w/wo siteNo
     @GetMapping("/itemType/weight")
+    @Cacheable(value= "getTotalNetWeightByItemTypeSiteNoAndDate")
     public BigDecimal getTotalNetWeightByItemTypeSiteNoAndDate(
             @RequestParam("itemType") String itemType,
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
@@ -60,6 +64,7 @@ public class TicketWeightController {
     }
 
     @GetMapping("/output/weight")
+    @Cacheable(value= "getTotalOutputNetWeightBySiteNoAndDate")
     public BigDecimal getTotalOutputNetWeightBySiteNoAndDate(
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
             @RequestParam(value = "clientType", required = false) String clientType,
@@ -72,6 +77,7 @@ public class TicketWeightController {
 
     //map of date: net weight for each item name filters: siteNo, center, village, clientType
     @GetMapping("/itemName-site/weight-date-list")
+    @Cacheable(value = "getNetWeightByDate")
     public Map<String, BigDecimal> getNetWeightByDate(
             @RequestParam(value = "itemName", required = false) String itemName,
             @RequestParam(value = "siteNo", required = false) Integer siteNo,
@@ -87,6 +93,7 @@ public class TicketWeightController {
 
     //all tickets in a certain site on a certain day
     @GetMapping("/all")
+    @Cacheable(value = "getTicketsBySiteNoAndDate")
     public List<TicketWeightDTO> getTicketsBySiteNoAndDate(
             @RequestParam("siteNo") Integer siteNo,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
@@ -105,6 +112,7 @@ public class TicketWeightController {
     }
 
     @GetMapping("/itemType/weight-list")
+    @Cacheable(value = "getNetWeightsByItemTypeAndDate")
     public BigDecimal[] getNetWeightsByItemTypeAndDate(
             @RequestParam(value = "itemType") String itemType,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
@@ -114,7 +122,8 @@ public class TicketWeightController {
         return netWeightsByItemType;
     }
 
-    @RequestMapping(value = "/output/weight-list", method = RequestMethod.GET)
+    @GetMapping("/output/weight-list")
+    @Cacheable(value = "getOutputNetWeightsByDate")
     public BigDecimal[] getOutputNetWeightsByDate(
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
@@ -124,6 +133,7 @@ public class TicketWeightController {
     }
 
     @GetMapping("/itemName/weight-list")
+    @Cacheable(value = "getNetWeightsByItemNameAndDate")
     public BigDecimal[] getNetWeightsByItemNameAndDate(
             @RequestParam(value = "itemName") String itemName,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
@@ -134,6 +144,7 @@ public class TicketWeightController {
     }
 
     @GetMapping("/output-rejected/weight-list")
+    @Cacheable(value = "getOutputRejectedNetWeightsByDate")
     public BigDecimal[] getOutputRejectedNetWeightsByDate(
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate
@@ -160,6 +171,7 @@ public class TicketWeightController {
     }
 
     @GetMapping("/centers-net-weight-list")
+    @Cacheable(value = "getCenterNetWeights")
     public ResponseEntity<Map<String, BigDecimal>> getCenterNetWeights(
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate,
@@ -169,6 +181,7 @@ public class TicketWeightController {
         return ResponseEntity.ok(centerNetWeights);
     }
     @GetMapping("/centers-accepted-net-weight-list")
+    @Cacheable(value = "getCenterAcceptedNetWeights")
     public ResponseEntity<Map<String, BigDecimal>> getCenterAcceptedNetWeights(
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd-MMM-yy") LocalDate endDate,
